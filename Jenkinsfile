@@ -20,6 +20,10 @@ pipeline {
     string(name: 'LOCAL_REGISTRY', defaultValue: 'localhost:5000', description: 'Local Docker registry (start with: docker run -d -p 5000:5000 registry:2)')
     booleanParam(name: 'START_MONITORING', defaultValue: true, description: 'Start/Update local Grafana + Prometheus stack (docker compose)')
     booleanParam(name: 'PUSH_REMOTE', defaultValue: false, description: 'Push image to remote registry (Docker Hub, etc.)')
+    // Additional controls
+    string(name: 'APP_PORT', defaultValue: '8087', description: 'Host port for app service mapping (host:80)')
+    booleanParam(name: 'AUTO_TAG', defaultValue: true, description: 'Also tag image with BUILD_NUMBER')
+    choice(name: 'ENVIRONMENT', choices: ['dev', 'staging', 'prod'], description: 'Deployment environment label (informational)')
   }
 
   environment {
@@ -186,16 +190,29 @@ docker push %LOCAL_REGISTRY%/%IMAGE_NAME%:%IMAGE_TAG%
             if (isUnix()) {
               sh """#!/usr/bin/env bash
 set -e
-IMAGE_REF=${LOCAL_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
+# Pick image to deploy to compose: prefer local registry when PUSH_LOCAL=true, otherwise use the locally built tag
+if [ "${PUSH_LOCAL}" = "true" ]; then
+  IMAGE_REF="${LOCAL_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+else
+  IMAGE_REF="${IMAGE_NAME}:${IMAGE_TAG}"
+fi
 echo "IMAGE=${IMAGE_REF}" > ${composeDir}/.env
+# Bring up infra and refresh only the app service to pick the new image
 docker compose -f ${composeDir}/docker-compose.yml --project-name monitoring up -d
+docker compose -f ${composeDir}/docker-compose.yml --project-name monitoring up -d --no-deps --force-recreate app
 """
             } else {
               bat """
 @echo off
-set IMAGE_REF=%LOCAL_REGISTRY%/%IMAGE_NAME%:%IMAGE_TAG%
+REM Pick image to deploy to compose: prefer local registry when PUSH_LOCAL=true, otherwise use the locally built tag
+set IMAGE_REF=%IMAGE_NAME%:%IMAGE_TAG%
+if /I "%PUSH_LOCAL%"=="true" (
+  set IMAGE_REF=%LOCAL_REGISTRY%/%IMAGE_NAME%:%IMAGE_TAG%
+)
 echo IMAGE=%IMAGE_REF%> %WORKSPACE%\\%composeDir%\\.env
+REM Bring up infra and refresh only the app service to pick the new image
 docker compose -f %WORKSPACE%\\%composeDir%\\docker-compose.yml --project-name monitoring up -d
+docker compose -f %WORKSPACE%\\%composeDir%\\docker-compose.yml --project-name monitoring up -d --no-deps --force-recreate app
 """
             }
           } else {

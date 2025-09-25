@@ -108,6 +108,7 @@ const Row: React.FC<{ node: ComponentDefinition; depth: number; selectedId?: str
           </button>
         </span>
       </div>
+      <div ref={setAfterDrop} className={`h-1 ${overId === `${node.uniqueId}-after` ? 'bg-blue-400' : 'bg-transparent'}`} />
       {expanded.has(node.uniqueId) && Array.isArray(children) && children.length > 0 && (
           <SortableContext items={children.map(c=>c.uniqueId)} strategy={verticalListSortingStrategy}>
             <div>

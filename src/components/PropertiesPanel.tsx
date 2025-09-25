@@ -1,11 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import type { ComponentDefinition, GlobalStyles } from '../types';
+import type { ComponentDefinition } from '../types';
 
 interface Props {
   selectedComponent: ComponentDefinition | null;
   onUpdateComponent: (id: string, updates: Partial<ComponentDefinition>) => void;
-  globalStyles: GlobalStyles;
-  onUpdateGlobalStyles: (styles: GlobalStyles) => void;
   onSaveCustom?: (comp: ComponentDefinition, name: string) => void;
   pages?: any[];
 }
@@ -25,7 +23,7 @@ const tailwindColors = {
   ]
 };
 
-const PropertiesPanel: React.FC<Props> = ({ selectedComponent, onUpdateComponent, globalStyles, onUpdateGlobalStyles, onSaveCustom, pages = [] }) => {
+const PropertiesPanel: React.FC<Props> = ({ selectedComponent, onUpdateComponent, onSaveCustom, pages = [] }) => {
   if (!selectedComponent) {
     return (
       <div className="h-full border-l bg-white">

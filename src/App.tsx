@@ -34,7 +34,7 @@ function App() {
   const [selectedComponent, setSelectedComponent] = useState<ComponentDefinition | null>(null);
   const [leftTab, setLeftTab] = useState<'library' | 'tree'>('library');
   const [showExportModal, setShowExportModal] = useState<boolean>(false);
-  const [globalStyles, setGlobalStyles] = useState<GlobalStyles>({});
+  const [globalStyles] = useState<GlobalStyles>({});
   const [customComponents, setCustomComponents] = useState<any[]>(() => {
     try { const s = localStorage.getItem('builder.customComponents'); if (s) return JSON.parse(s); } catch {}
     return [];
@@ -745,8 +745,6 @@ function App() {
           <PropertiesPanel
             selectedComponent={selectedComponent}
             onUpdateComponent={updateComponent}
-            globalStyles={globalStyles}
-            onUpdateGlobalStyles={setGlobalStyles}
             pages={pages}
             onSaveCustom={(comp, name) => {
               const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
