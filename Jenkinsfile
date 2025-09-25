@@ -24,6 +24,7 @@ pipeline {
     string(name: 'APP_PORT', defaultValue: '8087', description: 'Host port for app service mapping (host:80)')
     booleanParam(name: 'AUTO_TAG', defaultValue: true, description: 'Also tag image with BUILD_NUMBER')
     choice(name: 'ENVIRONMENT', choices: ['dev', 'staging', 'prod'], description: 'Deployment environment label (informational)')
+    booleanParam(name: 'USE_DOCKER_ONLY', defaultValue: true, description: 'Skip host npm install/build; rely on multi-stage Docker build')
   }
 
   environment {
@@ -41,6 +42,7 @@ pipeline {
     }
 
     stage('Install') {
+      when { expression { return !params.USE_DOCKER_ONLY } }
       steps {
         script {
           if (isUnix()) {
@@ -63,6 +65,7 @@ if exist package-lock.json (
     }
 
     stage('Build') {
+      when { expression { return !params.USE_DOCKER_ONLY } }
       steps {
         script {
           if (isUnix()) {
@@ -102,6 +105,9 @@ EXPOSE 80
 CMD ["nginx","-g","daemon off;"]
 EOF
 docker build -t ${DOCKER_REGISTRY}/${DOCKER_REPO}/${IMAGE_NAME}:${IMAGE_TAG} .
+if [ "${AUTO_TAG}" = "true" ]; then
+  docker tag ${DOCKER_REGISTRY}/${DOCKER_REPO}/${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_REGISTRY}/${DOCKER_REPO}/${IMAGE_NAME}:${BUILD_NUMBER}
+fi
 '''
           } else {
             bat '''
@@ -121,6 +127,9 @@ IF NOT EXIST Dockerfile (
   >>Dockerfile echo CMD ["nginx","-g","daemon off;"]
 )
 docker build -t %DOCKER_REGISTRY%/%DOCKER_REPO%/%IMAGE_NAME%:%IMAGE_TAG% .
+if /I "%AUTO_TAG%"=="true" (
+  docker tag %DOCKER_REGISTRY%/%DOCKER_REPO%/%IMAGE_NAME%:%IMAGE_TAG% %DOCKER_REGISTRY%/%DOCKER_REPO%/%IMAGE_NAME%:%BUILD_NUMBER%
+)
 '''
           }
         }
@@ -167,6 +176,11 @@ echo Tagging ${remoteImage} as ${localImage}
 docker tag ${remoteImage} ${localImage}
 echo Pushing ${localImage}
 docker push ${localImage}
+if [ "${AUTO_TAG}" = "true" ]; then
+  echo "Also pushing build-number tag"
+  docker tag ${DOCKER_REGISTRY}/${DOCKER_REPO}/${IMAGE_NAME}:${IMAGE_TAG} ${LOCAL_REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}
+  docker push ${LOCAL_REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}
+fi
 """
           } else {
             bat """
@@ -175,6 +189,11 @@ echo Tagging %DOCKER_REGISTRY%/%DOCKER_REPO%/%IMAGE_NAME%:%IMAGE_TAG% as %LOCAL_
 docker tag %DOCKER_REGISTRY%/%DOCKER_REPO%/%IMAGE_NAME%:%IMAGE_TAG% %LOCAL_REGISTRY%/%IMAGE_NAME%:%IMAGE_TAG%
 echo Pushing %LOCAL_REGISTRY%/%IMAGE_NAME%:%IMAGE_TAG%
 docker push %LOCAL_REGISTRY%/%IMAGE_NAME%:%IMAGE_TAG%
+if /I "%AUTO_TAG%"=="true" (
+  echo Also pushing build-number tag
+  docker tag %DOCKER_REGISTRY%/%DOCKER_REPO%/%IMAGE_NAME%:%IMAGE_TAG% %LOCAL_REGISTRY%/%IMAGE_NAME%:%BUILD_NUMBER%
+  docker push %LOCAL_REGISTRY%/%IMAGE_NAME%:%BUILD_NUMBER%
+)
 """
           }
         }
@@ -196,7 +215,16 @@ if [ "${PUSH_LOCAL}" = "true" ]; then
 else
   IMAGE_REF="${IMAGE_NAME}:${IMAGE_TAG}"
 fi
+if [ "${AUTO_TAG}" = "true" ]; then
+  # Prefer immutable build-number tag for deployment when enabled
+  if [ "${PUSH_LOCAL}" = "true" ]; then
+    IMAGE_REF="${LOCAL_REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}"
+  else
+    IMAGE_REF="${IMAGE_NAME}:${BUILD_NUMBER}"
+  fi
+fi
 echo "IMAGE=${IMAGE_REF}" > ${composeDir}/.env
+echo "APP_PORT=${APP_PORT}" >> ${composeDir}/.env
 # Bring up infra and refresh only the app service to pick the new image
 docker compose -f ${composeDir}/docker-compose.yml --project-name monitoring up -d
 docker compose -f ${composeDir}/docker-compose.yml --project-name monitoring up -d --no-deps --force-recreate app
@@ -209,10 +237,18 @@ set IMAGE_REF=%IMAGE_NAME%:%IMAGE_TAG%
 if /I "%PUSH_LOCAL%"=="true" (
   set IMAGE_REF=%LOCAL_REGISTRY%/%IMAGE_NAME%:%IMAGE_TAG%
 )
-echo IMAGE=%IMAGE_REF%> %WORKSPACE%\\%composeDir%\\.env
+if /I "%AUTO_TAG%"=="true" (
+  if /I "%PUSH_LOCAL%"=="true" (
+    set IMAGE_REF=%LOCAL_REGISTRY%/%IMAGE_NAME%:%BUILD_NUMBER%
+  ) else (
+    set IMAGE_REF=%IMAGE_NAME%:%BUILD_NUMBER%
+  )
+)
+echo IMAGE=%IMAGE_REF%> %WORKSPACE%\%composeDir%\.env
+echo APP_PORT=%APP_PORT%>> %WORKSPACE%\%composeDir%\.env
 REM Bring up infra and refresh only the app service to pick the new image
-docker compose -f %WORKSPACE%\\%composeDir%\\docker-compose.yml --project-name monitoring up -d
-docker compose -f %WORKSPACE%\\%composeDir%\\docker-compose.yml --project-name monitoring up -d --no-deps --force-recreate app
+docker compose -f %WORKSPACE%\%composeDir%\docker-compose.yml --project-name monitoring up -d
+docker compose -f %WORKSPACE%\%composeDir%\docker-compose.yml --project-name monitoring up -d --no-deps --force-recreate app
 """
             }
           } else {
