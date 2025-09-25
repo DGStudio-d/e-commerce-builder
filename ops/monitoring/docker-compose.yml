@@ -5,6 +5,8 @@ services:
     restart: unless-stopped
     ports:
       - "8087:80"
+    networks:
+      - monitoring
 
   prometheus:
     image: prom/prometheus:latest
@@ -14,6 +16,8 @@ services:
       - "9090:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - monitoring
 
   grafana:
     image: grafana/grafana:latest
@@ -26,6 +30,9 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=admin
     volumes:
       - grafana_data:/var/lib/grafana
+    networks:
+      - monitoring
+
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
     container_name: ebuilder_cadvisor
@@ -37,6 +44,20 @@ services:
       - /var/run:/var/run:rw
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
+    networks:
+      - monitoring
+
+  jenkins-blueocean:
+    image: jenkins/jenkins:lts
+    container_name: jenkins-blueocean
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - monitoring
 
   node-exporter:
     image: prom/node-exporter:latest
@@ -44,6 +65,13 @@ services:
     restart: unless-stopped
     ports:
       - "9100:9100"
+    networks:
+      - monitoring
 
 volumes:
   grafana_data:
+  jenkins_home:
+
+networks:
+  monitoring:
+    driver: bridge
