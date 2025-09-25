@@ -244,11 +244,11 @@ if /I "%AUTO_TAG%"=="true" (
     set IMAGE_REF=%IMAGE_NAME%:%BUILD_NUMBER%
   )
 )
-echo IMAGE=%IMAGE_REF%> %WORKSPACE%\%composeDir%\.env
-echo APP_PORT=%APP_PORT%>> %WORKSPACE%\%composeDir%\.env
+echo IMAGE=%IMAGE_REF%> %WORKSPACE%\\%composeDir%\\.env
+echo APP_PORT=%APP_PORT%>> %WORKSPACE%\\%composeDir%\\.env
 REM Bring up infra and refresh only the app service to pick the new image
-docker compose -f %WORKSPACE%\%composeDir%\docker-compose.yml --project-name monitoring up -d
-docker compose -f %WORKSPACE%\%composeDir%\docker-compose.yml --project-name monitoring up -d --no-deps --force-recreate app
+docker compose -f %WORKSPACE%\\%composeDir%\\docker-compose.yml --project-name monitoring up -d
+docker compose -f %WORKSPACE%\\%composeDir%\\docker-compose.yml --project-name monitoring up -d --no-deps --force-recreate app
 """
             }
           } else {
