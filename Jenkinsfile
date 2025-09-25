@@ -16,6 +16,10 @@ pipeline {
     string(name: 'IMAGE_NAME', defaultValue: 'e-commerce-builder', description: 'Docker image name')
     string(name: 'IMAGE_TAG', defaultValue: 'latest', description: 'Docker image tag')
     string(name: 'DOCKER_CREDENTIALS_ID', defaultValue: 'dockerhub_creds', description: 'Jenkins Docker Registry credentials ID')
+    booleanParam(name: 'PUSH_LOCAL', defaultValue: true, description: 'Also push image to local registry')
+    string(name: 'LOCAL_REGISTRY', defaultValue: 'localhost:5000', description: 'Local Docker registry (start with: docker run -d -p 5000:5000 registry:2)')
+    booleanParam(name: 'START_MONITORING', defaultValue: true, description: 'Start/Update local Grafana + Prometheus stack (docker compose)')
+    booleanParam(name: 'PUSH_REMOTE', defaultValue: false, description: 'Push image to remote registry (Docker Hub, etc.)')
   }
 
   environment {
@@ -119,7 +123,8 @@ docker build -t %DOCKER_REGISTRY%/%DOCKER_REPO%/%IMAGE_NAME%:%IMAGE_TAG% .
       }
     }
 
-    stage('Docker: Push Image') {
+    stage('Docker: Push Image (Remote)') {
+      when { expression { return params.PUSH_REMOTE } }
       steps {
         withCredentials([usernamePassword(credentialsId: params.DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
           script {
@@ -140,6 +145,61 @@ docker push %DOCKER_REGISTRY%/%DOCKER_REPO%/%IMAGE_NAME%:%IMAGE_TAG%
 docker logout %DOCKER_REGISTRY%
 '''
             }
+          }
+        }
+      }
+    }
+
+    stage('Docker: Push to Local Registry') {
+      when { expression { return params.PUSH_LOCAL } }
+      steps {
+        script {
+          def remoteImage = "${DOCKER_REGISTRY}/${DOCKER_REPO}/${IMAGE_NAME}:${IMAGE_TAG}"
+          def localImage  = "${LOCAL_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+          if (isUnix()) {
+            sh """#!/usr/bin/env bash
+set -e
+echo Tagging ${remoteImage} as ${localImage}
+docker tag ${remoteImage} ${localImage}
+echo Pushing ${localImage}
+docker push ${localImage}
+"""
+          } else {
+            bat """
+@echo off
+echo Tagging %DOCKER_REGISTRY%/%DOCKER_REPO%/%IMAGE_NAME%:%IMAGE_TAG% as %LOCAL_REGISTRY%/%IMAGE_NAME%:%IMAGE_TAG%
+docker tag %DOCKER_REGISTRY%/%DOCKER_REPO%/%IMAGE_NAME%:%IMAGE_TAG% %LOCAL_REGISTRY%/%IMAGE_NAME%:%IMAGE_TAG%
+echo Pushing %LOCAL_REGISTRY%/%IMAGE_NAME%:%IMAGE_TAG%
+docker push %LOCAL_REGISTRY%/%IMAGE_NAME%:%IMAGE_TAG%
+"""
+          }
+        }
+      }
+    }
+
+    stage('Monitoring: Up Grafana & Prometheus') {
+      when { expression { return params.START_MONITORING } }
+      steps {
+        script {
+          def composeDir = 'ops/monitoring'
+          if (fileExists(composeDir + '/docker-compose.yml')) {
+            if (isUnix()) {
+              sh """#!/usr/bin/env bash
+set -e
+IMAGE_REF=${LOCAL_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
+echo "IMAGE=${IMAGE_REF}" > ${composeDir}/.env
+docker compose -f ${composeDir}/docker-compose.yml --project-name monitoring up -d
+"""
+            } else {
+              bat """
+@echo off
+set IMAGE_REF=%LOCAL_REGISTRY%/%IMAGE_NAME%:%IMAGE_TAG%
+echo IMAGE=%IMAGE_REF%> %WORKSPACE%\\%composeDir%\\.env
+docker compose -f %WORKSPACE%\\%composeDir%\\docker-compose.yml --project-name monitoring up -d
+"""
+            }
+          } else {
+            echo "Monitoring compose not found at ${composeDir}/docker-compose.yml. Skipping."
           }
         }
       }

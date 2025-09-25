@@ -182,5 +182,91 @@
       ]
     },
     "styles": { "position": "relative", "display": "inline-block", "group": "group" }
+  },
+  {
+    "id": "input",
+    "name": "Input",
+    "category": "Form",
+    "type": "input",
+    "props": { "placeholder": "Enter text" },
+    "styles": { "border": "border", "rounded": "rounded", "padding": "px-3 py-2", "width": "w-full" }
+  },
+  {
+    "id": "textarea",
+    "name": "Textarea",
+    "category": "Form",
+    "type": "textarea",
+    "props": { "rows": 4, "text": "" },
+    "styles": { "border": "border", "rounded": "rounded", "padding": "px-3 py-2", "width": "w-full" }
+  },
+  {
+    "id": "form",
+    "name": "Form",
+    "category": "Form",
+    "type": "form",
+    "props": { "children": [] },
+    "styles": { "space": "space-y-3" }
+  },
+  {
+    "id": "image",
+    "name": "Image",
+    "category": "Media",
+    "type": "img",
+    "props": { "src": "https://via.placeholder.com/800x400", "alt": "Image" },
+    "styles": { "width": "w-full", "height": "h-48", "object": "object-cover", "rounded": "rounded" }
+  },
+  {
+    "id": "divider",
+    "name": "Divider",
+    "category": "Layout",
+    "type": "div",
+    "props": { "children": [] },
+    "styles": { "height": "h-px", "bg": "bg-gray-200", "width": "w-full" }
+  },
+  {
+    "id": "spacer",
+    "name": "Spacer",
+    "category": "Layout",
+    "type": "div",
+    "props": { "children": [] },
+    "styles": { "height": "h-8" }
+  },
+  {
+    "id": "row",
+    "name": "Row",
+    "category": "Layout",
+    "type": "div",
+    "props": { "children": [] },
+    "styles": { "display": "flex", "direction": "flex-row", "gap": "gap-4" }
+  },
+  {
+    "id": "column",
+    "name": "Column",
+    "category": "Layout",
+    "type": "div",
+    "props": { "children": [] },
+    "styles": { "display": "flex", "direction": "flex-col", "gap": "gap-3" }
+  },
+  {
+    "id": "dropdown",
+    "name": "Dropdown",
+    "category": "Interactive",
+    "type": "dropdown",
+    "props": {
+      "trigger": { "type": "button", "props": { "text": "Menu" }, "styles": { "padding": "px-3 py-2", "bg": "bg-gray-800 hover:bg-gray-900", "color": "text-white", "rounded": "rounded" } },
+      "menu": [
+        { "type": "dropdownItem", "props": { "text": "Item One", "href": "#" } },
+        { "type": "dropdownItem", "props": { "text": "Item Two", "href": "#" } }
+      ]
+    },
+    "styles": { }
+  },
+  {
+    "id": "dropdown-item",
+    "name": "Dropdown Item",
+    "category": "Interactive",
+    "type": "dropdownItem",
+    "props": { "text": "Item", "href": "#" },
+    "styles": { }
   }
 ]

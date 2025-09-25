@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { combineStyles } from '../utils/styleUtils';
 import type { ComponentDefinition, GlobalStyles, ComponentType } from '../types';
 
@@ -24,6 +24,14 @@ const DynamicComponent: React.FC<DynamicComponentProps> = ({ component, globalSt
       onSelectComponent && onSelectComponent(component);
     }
   } as const;
+
+  const fallbackSvg =
+    'data:image/svg+xml;utf8,' +
+    encodeURIComponent(`<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
+  <rect width="100%" height="100%" fill="#e5e7eb"/>
+  <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#6b7280" font-family="Arial, Helvetica, sans-serif" font-size="20">Image</text>
+</svg>`);
 
   const normalizeNode = (node: any) => {
     const nType = node.type || node.tag || 'div';
@@ -174,7 +182,19 @@ const DynamicComponent: React.FC<DynamicComponentProps> = ({ component, globalSt
       return React.createElement(Tag as any, commonProps, props.text || 'Heading');
     }
     case 'img':
-      return <img {...commonProps} src={props.src || ''} alt={props.alt || ''} />;
+      return (
+        <img
+          {...commonProps}
+          src={props.src || ''}
+          alt={props.alt || ''}
+          onError={(e) => {
+            const t = e.currentTarget as HTMLImageElement;
+            if ((t as any).dataset?.fallbackApplied) return;
+            (t as any).dataset.fallbackApplied = '1';
+            t.src = props.fallbackSrc || fallbackSvg;
+          }}
+        />
+      );
     case 'input':
       return <input {...commonProps} placeholder={props.placeholder || ''} />;
     case 'textarea':
@@ -194,27 +214,33 @@ const DynamicComponent: React.FC<DynamicComponentProps> = ({ component, globalSt
     case 'main':
     case 'aside': {
       const Container = type as string;
-      return React.createElement(
-        Container as any,
-        commonProps,
-        props.children && props.children.length > 0
-          ? (props.children as any[]).map((rawChild: any, idx: number) => {
-              const child = normalizeNode(rawChild);
-              return (
-                <DynamicComponent
-                  key={child.uniqueId || idx}
-                  component={child}
-                  globalStyles={globalStyles}
-                  onSelectComponent={onSelectComponent}
-                  selectedId={selectedId}
-                />
-              );
-            })
-          : children || (
+      const childNodes = useMemo(() => {
+        if (Array.isArray(props.children)) return props.children as any[];
+        if (props && props.children && typeof props.children === 'object') {
+          try { return Object.values(props.children as any); } catch {}
+        }
+        return [] as any[];
+      }, [props.children]);
+      return (
+        <Container {...(commonProps as any)}>
+          {childNodes.length > 0 ? (
+            childNodes.map((n:any, idx:number) => (
+              <DynamicComponent
+                key={n.uniqueId || idx}
+                component={n}
+                globalStyles={globalStyles}
+                onSelectComponent={onSelectComponent}
+                selectedId={selectedId}
+              />
+            ))
+          ) : (
+            children || (
               <div className="p-4 border-2 border-dashed border-gray-300 text-gray-500 text-center">
                 Drop components here
               </div>
             )
+          )}
+        </Container>
       );
     }
     default:

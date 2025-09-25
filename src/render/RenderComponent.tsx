@@ -97,11 +97,54 @@ export const RenderComponent: React.FC<{ node: JsonNode }> = ({ node }) => {
   const computedStyle = overrideColor ? { color: overrideColor } : undefined;
 
   switch (tag) {
+    case 'dropdown': {
+      // Accept items from props.menu or from children so users can add via builder tree
+      const trigger = (props as any)?.trigger || { type: 'button', props: { text: 'Menu' }, styles: {} };
+      const childrenItems = Array.isArray(node.children)
+        ? node.children
+        : (Array.isArray((props as any)?.children) ? (props as any).children : []);
+      const menuItems: any[] = Array.isArray((props as any)?.menu) && (props as any).menu.length > 0
+        ? (props as any).menu
+        : childrenItems;
+      const wrapperCls = `${cls} relative inline-block group`;
+      const triggerTag = (trigger.type || 'button') as string;
+      let triggerCls = `${(trigger.styles ? Object.values(trigger.styles).join(' ') : '')}`.trim();
+      if (!triggerCls) triggerCls = 'px-3 py-1 border rounded bg-white text-gray-700 hover:bg-gray-50';
+      const triggerLabel = (trigger.props && (trigger.props.text || trigger.props.label)) || 'Menu';
+      return (
+        <div className={wrapperCls} style={computedStyle}>
+          {React.createElement(triggerTag as any, { className: triggerCls }, triggerLabel)}
+          <div className="hidden group-hover:block absolute right-0 mt-2 w-56 rounded-md border bg-white shadow-xl z-50">
+            <div className="py-2">
+              {menuItems.map((mi, idx) => (
+                <RenderComponent key={mi.id || idx} node={{ ...(mi as any), type: (mi as any).type || 'dropdownItem' }} />
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+    case 'dropdownItem': {
+      const href = (props as any)?.href;
+      const label = (props as any)?.text || (props as any)?.label || 'Item';
+      const itemClass = `${cls} block w-full text-left px-4 py-2 text-sm hover:bg-gray-100`;
+      if (href) {
+        return React.createElement('a', { className: itemClass, href }, label);
+      }
+      return React.createElement('button', { className: itemClass }, label);
+    }
     case 'div':
-    case 'section': {
+    case 'section':
+    case 'header':
+    case 'footer':
+    case 'nav':
+    case 'main':
+    case 'article':
+    case 'aside': {
+      const kids = Array.isArray(node.children) ? node.children : (Array.isArray(node.props?.children) ? node.props!.children : []);
       return (
         React.createElement(tag as any, { ...common, style: computedStyle },
-          (node.children || []).map((child, i) => (
+          (kids as any[]).map((child: any, i: number) => (
             <RenderComponent key={child.id || i} node={child} />
           ))
         )
@@ -120,6 +163,16 @@ export const RenderComponent: React.FC<{ node: JsonNode }> = ({ node }) => {
     case 'button': {
       const label = node.content || props.text || 'Button';
       return React.createElement('button', { ...common, style: computedStyle }, label);
+    }
+    case 'input': {
+      // Void element: no children
+      const inputProps = { ...props };
+      return React.createElement('input', { ...common, ...inputProps, style: computedStyle });
+    }
+    case 'textarea': {
+      const rows = typeof props.rows === 'string' ? parseInt(props.rows) : (props.rows || 3);
+      const value = node.content || props.text || props.value;
+      return React.createElement('textarea', { ...common, rows, style: computedStyle }, value);
     }
     default: {
       // Fallback: render container with children
