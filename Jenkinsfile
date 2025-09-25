@@ -111,9 +111,9 @@ if [ -n "$(git status --porcelain)" ]; then
   echo "Changes detected, committing..."
   git add -A
   git commit -m "CI: automated update build ${BUILD_NUMBER}"
-  # Build authenticated remote URL
+  # Build authenticated remote URL (use sed to avoid Groovy escaping issues)
   REMOTE_URL=$(git config --get remote.origin.url)
-  AUTH_URL=${REMOTE_URL/https:\/\//https://$GIT_USER:$GIT_PASS@}
+  AUTH_URL=$(printf "%s" "$REMOTE_URL" | sed "s#https://#https://$GIT_USER:$GIT_PASS@#")
   git push "$AUTH_URL" "HEAD:${BRANCH}"
 else
   echo "No changes to commit."
