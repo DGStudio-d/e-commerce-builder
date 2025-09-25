@@ -1,6 +1,8 @@
 import React from 'react';
 // Preview has no drag-and-drop; all structural editing occurs in the Tree
 import DynamicComponent from './DynamicComponent';
+
+
 import type { ComponentDefinition, GlobalStyles } from '../types';
 
 interface Props {
