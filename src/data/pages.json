@@ -1,0 +1,171 @@
+[
+  {
+    "id": "home",
+    "title": "Home",
+    "slug": "home",
+    "components": [
+      {
+        "id": "site-header",
+        "tag": "header",
+        "style": { "bg": "bg-white", "border": "border-b", "padding": "py-3" },
+        "children": [
+          {
+            "id": "nav-row",
+            "tag": "nav",
+            "style": { "display": "flex", "justify": "justify-between", "align": "items-center", "padding": "px-4", "width": "max-w-6xl", "margin": "mx-auto" },
+            "children": [
+              { "id": "logo", "tag": "img", "src": "https://via.placeholder.com/120x40", "style": { "height": "h-10", "object": "object-contain" } },
+              {
+                "id": "nav-links",
+                "tag": "div",
+                "style": { "display": "flex", "gap": "gap-4", "align": "items-center" },
+                "children": [
+                  { "id": "l-home", "tag": "a", "content": "Home", "props": { "href": "#/home" }, "style": { "color": "text-gray-700 hover:text-gray-900" } },
+                  { "id": "l-products", "tag": "a", "content": "Products", "props": { "href": "#/products" }, "style": { "color": "text-gray-700 hover:text-gray-900" } },
+                  { "id": "l-checkout", "tag": "a", "content": "Checkout", "props": { "href": "#/checkout" }, "style": { "color": "text-gray-700 hover:text-gray-900" } }
+                ]
+              },
+              {
+                "id": "cart-menu",
+                "type": "dropdown",
+                "styles": { "margin": "ml-2" },
+                "props": {
+                  "trigger": {
+                    "type": "button",
+                    "props": { "text": "Cart (0)", "icon": "🛒" },
+                    "styles": { "padding": "px-3 py-2", "bg": "bg-gray-800", "text": "text-white", "rounded": "rounded-md" }
+                  },
+                  "menu": [
+                    { "type": "dropdownItem", "props": { "text": "Your cart is empty" }, "styles": { "text": "text-gray-500" } },
+                    { "type": "dropdownItem", "props": { "text": "Go to Checkout", "href": "/checkout" }, "events": { "onClick": "goToCheckout" }, "styles": { "padding": "px-4 py-2", "bg": "bg-blue-600", "text": "text-white", "rounded": "rounded" } }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+
+      {
+        "id": "hero",
+        "tag": "section",
+        "style": { "bg": "bg-gray-50", "padding": "py-16" },
+        "children": [
+          { "id": "h-title", "tag": "h1", "content": "Welcome to our store", "style": { "font": "text-4xl font-bold", "text": "text-center", "margin": "mb-3" } },
+          { "id": "h-sub", "tag": "p", "content": "Discover great products and deals", "style": { "color": "text-gray-600", "text": "text-center" } }
+        ]
+      },
+
+      {
+        "id": "featured",
+        "tag": "div",
+        "style": { "width": "max-w-6xl", "margin": "mx-auto", "padding": "px-4" },
+        "children": [
+          { "id": "sec-title", "tag": "h2", "content": "Featured Products", "style": { "font": "text-2xl font-bold", "margin": "mb-4" } },
+          {
+            "id": "grid",
+            "tag": "div",
+            "style": { "display": "grid", "grid": "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3", "gap": "gap-6" },
+            "children": [
+              {
+                "id": "card1",
+                "tag": "div",
+                "style": { "bg": "bg-white", "rounded": "rounded-xl", "shadow": "shadow", "border": "border", "padding": "p-4" },
+                "children": [
+                  { "id": "c1-img", "tag": "img", "src": "https://via.placeholder.com/600x400", "style": { "rounded": "rounded-lg", "object": "object-cover", "width": "w-full", "height": "h-48" } },
+                  { "id": "c1-title", "tag": "h3", "content": "Product A", "style": { "font": "text-lg font-semibold", "margin": "mt-3" } },
+                  { "id": "c1-price", "tag": "p", "content": "$29.99", "style": { "color": "text-green-600", "font": "font-medium", "margin": "mt-1" } },
+                  { "id": "c1-btn", "tag": "button", "content": "Add to Cart", "style": { "bg": "bg-blue-600 hover:bg-blue-700", "color": "text-white", "rounded": "rounded-md", "padding": "px-3 py-2", "margin": "mt-3 w-full" }, "props": { "productId": "prod_A" }, "events": { "onClick": "addToCart" } }
+                ]
+              },
+              {
+                "id": "card2",
+                "tag": "div",
+                "style": { "bg": "bg-white", "rounded": "rounded-xl", "shadow": "shadow", "border": "border", "padding": "p-4" },
+                "children": [
+                  { "id": "c2-img", "tag": "img", "src": "https://via.placeholder.com/600x400", "style": { "rounded": "rounded-lg", "object": "object-cover", "width": "w-full", "height": "h-48" } },
+                  { "id": "c2-title", "tag": "h3", "content": "Product B", "style": { "font": "text-lg font-semibold", "margin": "mt-3" } },
+                  { "id": "c2-price", "tag": "p", "content": "$39.99", "style": { "color": "text-green-600", "font": "font-medium", "margin": "mt-1" } },
+                  { "id": "c2-btn", "tag": "button", "content": "Add to Cart", "style": { "bg": "bg-blue-600 hover:bg-blue-700", "color": "text-white", "rounded": "rounded-md", "padding": "px-3 py-2", "margin": "mt-3 w-full" }, "props": { "productId": "prod_B" }, "events": { "onClick": "addToCart" } }
+                ]
+              },
+              {
+                "id": "card3",
+                "tag": "div",
+                "style": { "bg": "bg-white", "rounded": "rounded-xl", "shadow": "shadow", "border": "border", "padding": "p-4" },
+                "children": [
+                  { "id": "c3-img", "tag": "img", "src": "https://via.placeholder.com/600x400", "style": { "rounded": "rounded-lg", "object": "object-cover", "width": "w-full", "height": "h-48" } },
+                  { "id": "c3-title", "tag": "h3", "content": "Product C", "style": { "font": "text-lg font-semibold", "margin": "mt-3" } },
+                  { "id": "c3-price", "tag": "p", "content": "$49.99", "style": { "color": "text-green-600", "font": "font-medium", "margin": "mt-1" } },
+                  { "id": "c3-btn", "tag": "button", "content": "Add to Cart", "style": { "bg": "bg-blue-600 hover:bg-blue-700", "color": "text-white", "rounded": "rounded-md", "padding": "px-3 py-2", "margin": "mt-3 w-full" }, "props": { "productId": "prod_C" }, "events": { "onClick": "addToCart" } }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+
+      {
+        "id": "site-footer",
+        "tag": "footer",
+        "style": { "bg": "bg-gray-900", "text": "text-white", "padding": "py-8", "margin": "mt-10" },
+        "children": [
+          { "id": "f-text", "tag": "p", "content": "© 2025 My Shop. All rights reserved.", "style": { "text": "text-center text-sm" } }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "products",
+    "title": "Products",
+    "slug": "products",
+    "components": [
+      { "id": "p-title", "tag": "h1", "content": "All Products", "style": { "font": "text-3xl font-bold", "padding": "py-6", "text": "text-center" } },
+      { "id": "p-grid", "tag": "div", "style": { "display": "grid", "grid": "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4", "gap": "gap-6", "width": "max-w-6xl", "margin": "mx-auto", "padding": "px-4 pb-10" }, "children": [
+        { "id": "p-card1", "tag": "div", "style": { "bg": "bg-white", "rounded": "rounded-xl", "shadow": "shadow", "border": "border", "padding": "p-4" }, "children": [
+          { "id": "p1-img", "tag": "img", "src": "https://via.placeholder.com/600x400", "style": { "rounded": "rounded-lg", "object": "object-cover", "width": "w-full", "height": "h-48" } },
+          { "id": "p1-title", "tag": "h3", "content": "Item 1", "style": { "font": "text-lg font-semibold", "margin": "mt-3" } },
+          { "id": "p1-price", "tag": "p", "content": "$19.99", "style": { "color": "text-green-600", "font": "font-medium", "margin": "mt-1" } },
+          { "id": "p1-btn", "tag": "button", "content": "Add to Cart", "style": { "bg": "bg-blue-600 hover:bg-blue-700", "color": "text-white", "rounded": "rounded-md", "padding": "px-3 py-2", "margin": "mt-3 w-full" }, "props": { "productId": "prod_1" }, "events": { "onClick": "addToCart" } }
+        ] },
+        { "id": "p-card2", "tag": "div", "style": { "bg": "bg-white", "rounded": "rounded-xl", "shadow": "shadow", "border": "border", "padding": "p-4" }, "children": [
+          { "id": "p2-img", "tag": "img", "src": "https://via.placeholder.com/600x400", "style": { "rounded": "rounded-lg", "object": "object-cover", "width": "w-full", "height": "h-48" } },
+          { "id": "p2-title", "tag": "h3", "content": "Item 2", "style": { "font": "text-lg font-semibold", "margin": "mt-3" } },
+          { "id": "p2-price", "tag": "p", "content": "$24.99", "style": { "color": "text-green-600", "font": "font-medium", "margin": "mt-1" } },
+          { "id": "p2-btn", "tag": "button", "content": "Add to Cart", "style": { "bg": "bg-blue-600 hover:bg-blue-700", "color": "text-white", "rounded": "rounded-md", "padding": "px-3 py-2", "margin": "mt-3 w-full" }, "props": { "productId": "prod_2" }, "events": { "onClick": "addToCart" } }
+        ] },
+        { "id": "p-card3", "tag": "div", "style": { "bg": "bg-white", "rounded": "rounded-xl", "shadow": "shadow", "border": "border", "padding": "p-4" }, "children": [
+          { "id": "p3-img", "tag": "img", "src": "https://via.placeholder.com/600x400", "style": { "rounded": "rounded-lg", "object": "object-cover", "width": "w-full", "height": "h-48" } },
+          { "id": "p3-title", "tag": "h3", "content": "Item 3", "style": { "font": "text-lg font-semibold", "margin": "mt-3" } },
+          { "id": "p3-price", "tag": "p", "content": "$34.99", "style": { "color": "text-green-600", "font": "font-medium", "margin": "mt-1" } },
+          { "id": "p3-btn", "tag": "button", "content": "Add to Cart", "style": { "bg": "bg-blue-600 hover:bg-blue-700", "color": "text-white", "rounded": "rounded-md", "padding": "px-3 py-2", "margin": "mt-3 w-full" }, "props": { "productId": "prod_3" }, "events": { "onClick": "addToCart" } }
+        ] },
+        { "id": "p-card4", "tag": "div", "style": { "bg": "bg-white", "rounded": "rounded-xl", "shadow": "shadow", "border": "border", "padding": "p-4" }, "children": [
+          { "id": "p4-img", "tag": "img", "src": "https://via.placeholder.com/600x400", "style": { "rounded": "rounded-lg", "object": "object-cover", "width": "w-full", "height": "h-48" } },
+          { "id": "p4-title", "tag": "h3", "content": "Item 4", "style": { "font": "text-lg font-semibold", "margin": "mt-3" } },
+          { "id": "p4-price", "tag": "p", "content": "$44.99", "style": { "color": "text-green-600", "font": "font-medium", "margin": "mt-1" } },
+          { "id": "p4-btn", "tag": "button", "content": "Add to Cart", "style": { "bg": "bg-blue-600 hover:bg-blue-700", "color": "text-white", "rounded": "rounded-md", "padding": "px-3 py-2", "margin": "mt-3 w-full" }, "props": { "productId": "prod_4" }, "events": { "onClick": "addToCart" } }
+        ] }
+      ] }
+    ]
+  },
+  {
+    "id": "checkout",
+    "title": "Checkout",
+    "slug": "checkout",
+    "components": [
+      { "id": "co-title", "tag": "h1", "content": "Checkout", "style": { "font": "text-3xl font-bold", "padding": "py-6", "text": "text-center" } },
+      {
+        "id": "co-form",
+        "tag": "form",
+        "style": { "bg": "bg-white", "border": "border", "rounded": "rounded-lg", "shadow": "shadow", "width": "max-w-3xl", "margin": "mx-auto", "padding": "p-6" },
+        "children": [
+          { "id": "co-name", "tag": "input", "props": { "placeholder": "Full Name" }, "style": { "border": "border", "rounded": "rounded-md", "padding": "px-3 py-2", "width": "w-full", "margin": "mb-3" } },
+          { "id": "co-email", "tag": "input", "props": { "placeholder": "Email" }, "style": { "border": "border", "rounded": "rounded-md", "padding": "px-3 py-2", "width": "w-full", "margin": "mb-3" } },
+          { "id": "co-address", "tag": "input", "props": { "placeholder": "Address" }, "style": { "border": "border", "rounded": "rounded-md", "padding": "px-3 py-2", "width": "w-full", "margin": "mb-3" } },
+          { "id": "co-pay", "tag": "button", "content": "Pay Now", "style": { "bg": "bg-green-600 hover:bg-green-700", "color": "text-white", "rounded": "rounded-md", "padding": "px-3 py-2", "width": "w-full", "margin": "mt-2" } }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,186 @@
+[
+  {
+    "id": "button",
+    "name": "Button",
+    "category": "Interactive",
+    "type": "button",
+    "props": { "text": "Click me" },
+    "styles": { "padding": "px-4 py-2", "bg": "bg-blue-600 text-white rounded" }
+  },
+  {
+    "id": "text",
+    "name": "Text",
+    "category": "Content",
+    "type": "p",
+    "props": { "text": "Your text here" },
+    "styles": { "margin": "mb-2" }
+  },
+  {
+    "id": "heading",
+    "name": "Heading",
+    "category": "Content",
+    "type": "h2",
+    "props": { "text": "Your heading" },
+    "styles": { "font": "text-2xl font-bold", "margin": "mb-4" }
+  },
+  {
+    "id": "container",
+    "name": "Container",
+    "category": "Layout",
+    "type": "div",
+    "props": { "children": [] },
+    "styles": { "width": "max-w-5xl", "margin": "mx-auto", "padding": "p-4" }
+  },
+  {
+    "id": "header",
+    "name": "Header",
+    "category": "Layout",
+    "type": "header",
+    "props": { "children": [] },
+    "styles": { "bg": "bg-white", "border": "border-b", "shadow": "shadow-sm", "padding": "py-4" }
+  },
+  {
+    "id": "nav",
+    "name": "Navigation",
+    "category": "Layout",
+    "type": "nav",
+    "props": { "children": [] },
+    "styles": { "display": "flex", "justify": "justify-between", "align": "items-center", "padding": "px-4" }
+  },
+  {
+    "id": "product-card",
+    "name": "Product Card",
+    "category": "E-commerce",
+    "type": "div",
+    "props": {
+      "children": [
+        { "id": "product-image", "tag": "img", "src": "https://via.placeholder.com/600x400", "style": { "rounded": "rounded-lg", "object": "object-cover", "width": "w-full", "height": "h-48" } },
+        { "id": "product-title", "tag": "h3", "content": "Product Name", "style": { "font": "text-lg font-semibold", "margin": "mt-3" } },
+        { "id": "product-desc", "tag": "p", "content": "Short description of the product.", "style": { "color": "text-gray-600", "margin": "mt-1" } },
+        { "id": "product-price", "tag": "p", "content": "$49.99", "style": { "color": "text-green-600", "font": "font-medium", "margin": "mt-2" } },
+        { "id": "product-btn", "tag": "button", "content": "Add to Cart", "style": { "bg": "bg-blue-600 hover:bg-blue-700", "color": "text-white", "rounded": "rounded-md", "padding": "px-3 py-2", "margin": "mt-3 w-full" }, "bindings": { "productId": "prod_123" }, "events": { "onClick": "addToCart" } }
+      ]
+    },
+    "styles": { "bg": "bg-white", "rounded": "rounded-xl", "shadow": "shadow", "padding": "p-4", "border": "border" }
+  },
+  {
+    "id": "footer",
+    "name": "Footer",
+    "category": "Layout",
+    "type": "footer",
+    "props": { "children": [] },
+    "styles": { "bg": "bg-gray-900", "color": "text-white", "padding": "py-8", "margin": "mt-10" }
+  },
+  {
+    "id": "logo-image",
+    "name": "Logo Image",
+    "category": "Media",
+    "type": "img",
+    "props": { "src": "https://via.placeholder.co/120x40", "alt": "Logo" },
+    "styles": { "height": "h-10", "object": "object-contain" }
+  },
+  {
+    "id": "link",
+    "name": "Link",
+    "category": "Interactive",
+    "type": "a",
+    "props": { "text": "Learn more", "href": "#" },
+    "styles": { "color": "text-blue-600 hover:text-blue-800", "text": "underline", "transition": "transition-colors" }
+  },
+  {
+    "id": "hero-section",
+    "name": "Hero Section",
+    "category": "Layout",
+    "type": "section",
+    "props": {
+      "children": [
+        { "id": "hero-heading", "tag": "h1", "content": "Welcome to our store", "style": { "font": "text-4xl font-bold", "margin": "mb-3" } },
+        { "id": "hero-sub", "tag": "p", "content": "Discover great products and deals", "style": { "color": "text-gray-600" } },
+        { "id": "hero-cta", "tag": "button", "content": "Shop Now", "style": { "bg": "bg-blue-600 hover:bg-blue-700", "color": "text-white", "rounded": "rounded-md", "padding": "px-4 py-2", "margin": "mt-4" } }
+      ]
+    },
+    "styles": { "bg": "bg-gray-50", "padding": "py-16 px-4", "text": "text-center" }
+  },
+  {
+    "id": "grid",
+    "name": "Grid",
+    "category": "Layout",
+    "type": "div",
+    "props": { "children": [] },
+    "styles": { "display": "grid", "grid": "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3", "gap": "gap-6" }
+  },
+  {
+    "id": "card",
+    "name": "Card",
+    "category": "Layout",
+    "type": "div",
+    "props": { "children": [] },
+    "styles": { "bg": "bg-white", "rounded": "rounded-lg", "shadow": "shadow-sm", "border": "border", "padding": "p-4" }
+  },
+  {
+    "id": "price-text",
+    "name": "Price Text",
+    "category": "E-commerce",
+    "type": "p",
+    "props": { "text": "$0.00" },
+    "styles": { "color": "text-green-600", "font": "font-semibold" }
+  },
+  {
+    "id": "add-to-cart",
+    "name": "Add To Cart Button",
+    "category": "E-commerce",
+    "type": "button",
+    "props": { "text": "Add to Cart" },
+    "styles": { "bg": "bg-blue-600 hover:bg-blue-700", "color": "text-white", "rounded": "rounded-md", "padding": "px-4 py-2", "width": "w-full" }
+  },
+  {
+    "id": "cart-dropdown",
+    "name": "Cart Dropdown",
+    "category": "E-commerce",
+    "type": "div",
+    "props": {
+      "children": [
+        { "id": "cart-button", "tag": "button", "content": "Cart (0)", "style": { "bg": "bg-gray-800 hover:bg-gray-900", "color": "text-white", "rounded": "rounded-md", "padding": "px-3 py-2" } },
+        {
+          "id": "cart-menu",
+          "tag": "div",
+          "style": {
+            "display": "hidden group-hover:block",
+            "position": "absolute",
+            "top": "mt-2",
+            "right": "right-0",
+            "width": "w-80",
+            "bg": "bg-white",
+            "shadow": "shadow-xl",
+            "rounded": "rounded-lg",
+            "border": "border"
+          },
+          "children": [
+            {
+              "id": "cart-items",
+              "tag": "div",
+              "style": { "maxHeight": "max-h-64", "overflow": "overflow-auto", "padding": "p-3", "divide": "divide-y" },
+              "children": [
+                { "id": "item-1", "tag": "div", "style": { "display": "flex", "align": "items-center", "gap": "gap-3", "padding": "py-2" }, "children": [
+                  { "id": "item-img", "tag": "img", "src": "https://via.placeholder.com/60", "style": { "width": "w-12", "height": "h-12", "rounded": "rounded" } },
+                  { "id": "item-meta", "tag": "div", "children": [
+                    { "id": "item-name", "tag": "p", "content": "Product Name", "style": { "font": "font-medium" }, "events": { "onClick": "removeFromCart" } },
+                    { "id": "item-price", "tag": "p", "content": "$19.99", "style": { "color": "text-gray-600", "text": "text-sm" } }
+                  ]}
+                ]}
+              ]
+            },
+            { "id": "cart-summary", "tag": "div", "style": { "padding": "p-4", "bg": "bg-gray-50", "rounded": "rounded-b-lg", "space": "space-y-2" }, "children": [
+              { "id": "subtotal-row", "tag": "div", "style": { "display": "flex", "justify": "justify-between", "font": "font-medium" }, "children": [
+                { "id": "subtotal-label", "tag": "span", "content": "Subtotal" },
+                { "id": "subtotal-value", "tag": "span", "content": "$19.99" }
+              ]},
+              { "id": "checkout-btn", "tag": "button", "content": "Checkout", "style": { "bg": "bg-blue-600 hover:bg-blue-700", "color": "text-white", "rounded": "rounded-md", "padding": "py-2", "width": "w-full" }, "events": { "onClick": "goToCheckout" } }
+            ]}
+          ]
+        }
+      ]
+    },
+    "styles": { "position": "relative", "display": "inline-block", "group": "group" }
+  }
+]

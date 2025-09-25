@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/components.schema.json",
+  "title": "Builder Components Schema",
+  "description": "Schema for a component node in the website builder. Supports nested children and is extensible for future features (e.g., e-commerce).",
+  "type": "object",
+  "$defs": {
+    "styleObject": {
+      "type": "object",
+      "description": "A simple map of style buckets to Tailwind utility classes or raw CSS class names.",
+      "additionalProperties": { "type": "string" },
+      "examples": [
+        { "padding": "px-4 py-2", "bg": "bg-white", "rounded": "rounded-lg", "shadow": "shadow" }
+      ]
+    },
+    "component": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "id": { "type": "string", "description": "Stable identifier for this component instance (unique in a page)." },
+        "tag": {
+          "type": "string",
+          "description": "HTML tag or custom tag to render (e.g., 'div', 'button', 'img').",
+          "examples": ["div", "section", "h2", "p", "img", "button", "a"]
+        },
+        "content": {
+          "description": "Primary textual content for text-bearing tags (e.g., p, h1-h6, button).",
+          "type": ["string", "null"],
+          "default": null
+        },
+        "style": { "$ref": "#/$defs/styleObject" },
+        "color": {
+          "type": ["string", "object", "null"],
+          "description": "Color token or inline definition. May reference theme colors (e.g., 'primary').",
+          "default": null
+        },
+        "src": {
+          "type": ["string", "null"],
+          "format": "uri-reference",
+          "description": "Source for media (e.g., img/video).",
+          "default": null
+        },
+        "href": {
+          "type": ["string", "null"],
+          "format": "uri-reference",
+          "description": "Optional link target for anchors or linked components.",
+          "default": null
+        },
+        "props": {
+          "type": "object",
+          "description": "Arbitrary props bag for extensibility (e.g., role, aria-label, data-attributes).",
+          "additionalProperties": true
+        },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/component" },
+          "description": "Nested child components."
+        },
+        "bindings": {
+          "type": "object",
+          "description": "Optional data bindings (e.g., productId, price). Designed for e-commerce features.",
+          "additionalProperties": true,
+          "examples": [
+            { "productId": "prod_123", "price": "theme.pricing.primary" }
+          ]
+        },
+        "variants": {
+          "type": "object",
+          "description": "Optional variant map for responsive or state variants (sm, md, hover, dark).",
+          "additionalProperties": { "$ref": "#/$defs/styleObject" }
+        }
+      },
+      "required": ["id", "tag"],
+      "examples": [
+        {
+          "id": "heading_1",
+          "tag": "h2",
+          "content": "Featured Products",
+          "style": { "font": "text-2xl font-bold", "margin": "mb-4" },
+          "children": []
+        },
+        {
+          "id": "card_1",
+          "tag": "div",
+          "style": { "bg": "bg-white", "rounded": "rounded-xl", "shadow": "shadow", "padding": "p-4" },
+          "children": [
+            { "id": "img_1", "tag": "img", "src": "https://via.placeholder.com/600x400", "style": { "rounded": "rounded-lg" } },
+            { "id": "title_1", "tag": "h3", "content": "Product Name", "style": { "font": "text-lg font-semibold", "margin": "mt-3" } },
+            { "id": "price_1", "tag": "p", "content": "$49.99", "style": { "color": "text-green-600", "font": "font-medium" } },
+            { "id": "btn_1", "tag": "button", "content": "Add to Cart", "style": { "bg": "bg-blue-600 hover:bg-blue-700", "color": "text-white", "rounded": "rounded-md", "padding": "px-3 py-2" }, "bindings": { "productId": "prod_123" } }
+          ]
+        }
+      ]
+    }
+  },
+  "allOf": [ { "$ref": "#/$defs/component" } ]
+}

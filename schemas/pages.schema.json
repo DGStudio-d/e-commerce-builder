@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/pages.schema.json",
+  "title": "Pages Schema",
+  "description": "Schema for defining pages composed of component trees.",
+  "type": "object",
+  "$defs": {
+    "componentRefOrNode": {
+      "description": "Either an inline component node (per components.schema) or a reference id to a reusable component.",
+      "anyOf": [
+        { "$ref": "./components.schema.json#/$defs/component" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "ref": { "type": "string", "description": "Identifier of a reusable component defined elsewhere." },
+            "overrides": {
+              "type": "object",
+              "description": "Optional prop/style overrides applied to the referenced component.",
+              "additionalProperties": true
+            }
+          },
+          "required": ["ref"]
+        }
+      ]
+    },
+    "page": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier for the page." },
+        "title": { "type": "string", "description": "Human friendly page title." },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "description": "URL segment for the page (kebab-case)."
+        },
+        "components": {
+          "type": "array",
+          "description": "Root-level components for this page.",
+          "items": { "$ref": "#/$defs/componentRefOrNode" }
+        },
+        "seo": {
+          "type": "object",
+          "description": "Optional SEO properties.",
+          "additionalProperties": false,
+          "properties": {
+            "metaTitle": { "type": "string" },
+            "metaDescription": { "type": "string" },
+            "ogImage": { "type": "string", "format": "uri-reference" }
+          }
+        },
+        "layout": {
+          "type": "object",
+          "description": "Optional page-level layout configuration (header/footer toggles, container widths).",
+          "additionalProperties": true
+        },
+        "custom": {
+          "type": "object",
+          "description": "Extensibility point for features like commerce (e.g., collectionId, productId, cart settings).",
+          "additionalProperties": true
+        }
+      },
+      "required": ["id", "title", "slug", "components"],
+      "examples": [
+        {
+          "id": "home",
+          "title": "Home",
+          "slug": "home",
+          "components": [
+            {
+              "id": "hero",
+              "tag": "section",
+              "style": { "padding": "py-16", "bg": "bg-gray-50" },
+              "children": [
+                { "id": "h1", "tag": "h1", "content": "Welcome to our store", "style": { "font": "text-4xl font-bold", "margin": "mb-4" } },
+                { "id": "p1", "tag": "p", "content": "Discover great products", "style": { "color": "text-gray-600" } }
+              ]
+            },
+            { "ref": "featured-products", "overrides": { "style": { "margin": "mt-10" } } }
+          ],
+          "seo": { "metaTitle": "Home - My Shop", "metaDescription": "Discover great products" },
+          "custom": { "collectionId": "featured" }
+        }
+      ]
+    }
+  },
+  "allOf": [ { "$ref": "#/$defs/page" } ]
+}

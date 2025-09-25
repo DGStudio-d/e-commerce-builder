@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/general.schema.json",
+  "title": "General Theme Schema",
+  "description": "Theme configuration for the website builder: colors, spacing, typography. Designed to be extensible for future features.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Theme schema version",
+      "default": "1.0.0"
+    },
+    "colors": {
+      "type": "object",
+      "description": "Named color tokens used across the site.",
+      "additionalProperties": {
+        "anyOf": [
+          { "type": "string", "description": "Hex, rgb(a), hsl(a), or Tailwind token (e.g., 'blue-600')" },
+          {
+            "type": "object",
+            "description": "Structured color token with variants",
+            "additionalProperties": false,
+            "properties": {
+              "base": { "type": "string" },
+              "light": { "type": "string" },
+              "dark": { "type": "string" },
+              "contrastText": { "type": "string" }
+            }
+          }
+        ]
+      },
+      "examples": [
+        {
+          "primary": "#3B82F6",
+          "secondary": { "base": "#8B5CF6", "light": "#A78BFA", "dark": "#6D28D9", "contrastText": "#ffffff" },
+          "accent": "rgb(245,158,11)",
+          "background": "#ffffff",
+          "surface": "#F8FAFC",
+          "text": { "base": "#111827", "muted": "#6B7280" }
+        }
+      ]
+    },
+    "spacing": {
+      "type": "object",
+      "description": "Spacing scale tokens (used for padding/margin). Keys are token names, values are CSS sizes.",
+      "additionalProperties": { "type": "string" },
+      "examples": [
+        { "xs": "4px", "sm": "8px", "md": "16px", "lg": "24px", "xl": "32px", "2xl": "48px" }
+      ]
+    },
+    "typography": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fontFamily": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "examples": [ { "primary": "Inter, sans-serif", "heading": "Poppins, sans-serif" } ]
+        },
+        "fontSize": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "examples": [ { "sm": "0.875rem", "base": "1rem", "lg": "1.125rem", "xl": "1.25rem", "2xl": "1.5rem" } ]
+        },
+        "lineHeight": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "examples": [ { "tight": "1.1", "snug": "1.3", "normal": "1.5" } ]
+        },
+        "fontWeight": {
+          "type": "object",
+          "additionalProperties": { "type": "number" },
+          "examples": [ { "regular": 400, "medium": 500, "semibold": 600, "bold": 700 } ]
+        }
+      }
+    },
+    "breakpoints": {
+      "type": "object",
+      "description": "Optional responsive breakpoints.",
+      "additionalProperties": { "type": "string" },
+      "examples": [ { "sm": "640px", "md": "768px", "lg": "1024px", "xl": "1280px" } ]
+    },
+    "custom": {
+      "type": "object",
+      "description": "Any additional theme properties for extensibility (e.g., product badges, card variants).",
+      "additionalProperties": true
+    }
+  },
+  "required": ["colors", "spacing", "typography"],
+  "examples": [
+    {
+      "version": "1.0.0",
+      "colors": {
+        "primary": "#3B82F6",
+        "secondary": { "base": "#8B5CF6", "contrastText": "#ffffff" },
+        "background": "#ffffff",
+        "text": { "base": "#111827", "muted": "#6B7280" }
+      },
+      "spacing": { "xs": "4px", "sm": "8px", "md": "16px", "lg": "24px" },
+      "typography": {
+        "fontFamily": { "primary": "Inter, sans-serif", "heading": "Poppins, sans-serif" },
+        "fontSize": { "sm": "0.875rem", "base": "1rem", "lg": "1.125rem" },
+        "lineHeight": { "normal": "1.5" },
+        "fontWeight": { "regular": 400, "semibold": 600, "bold": 700 }
+      },
+      "breakpoints": { "sm": "640px", "md": "768px" }
+    }
+  ]
+}
