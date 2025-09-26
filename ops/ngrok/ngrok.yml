@@ -1,0 +1,17 @@
+version: "2"
+# Replace with your authtoken from https://dashboard.ngrok.com/get-started/your-authtoken
+authtoken: YOUR_NGROK_AUTHTOKEN
+
+tunnels:
+  jenkins:
+    addr: 8080
+    proto: http
+    # If you have reserved a domain in ngrok dashboard, set it here:
+    # hostname: jenkins-yourname.ngrok-free.app
+    # Otherwise, delete hostname and ngrok will assign a random URL
+
+  sonarqube:
+    addr: 9000
+    proto: http
+    # If you have reserved a domain in ngrok dashboard, set it here:
+    # hostname: sonar-yourname.ngrok-free.app

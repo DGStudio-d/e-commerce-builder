@@ -6,7 +6,6 @@ import ExportModal from './components/ExportModal';
 import type { ComponentDefinition, GlobalStyles } from './types';
 import pagesData from './data/pages.json';
 import PageRenderer from './render/PageRenderer';
-import NavBar from './render/NavBar';
 import ComponentsTree from './components/ComponentsTree';
 import { findPath, moveUp as treeMoveUp, moveDown as treeMoveDown, outdent as treeOutdent, insertAtPath, removeAtPath } from './utils/treeOps';
 // No DnD at preview level; tree handles DnD internally
@@ -687,12 +686,10 @@ function App() {
         </div>
       </div>
       {mode === 'public' ? (
-        <div className="flex-1 overflow-auto p-4">
-          <div className="mx-auto max-w-6xl">
-            {/* Auto-generated nav from pages.json */}
-            <NavBar currentSlug={currentSlug} mode={mode} />
-            <PageRenderer slug={currentSlug} pagesOverride={overridePages} />
-          </div>
+        // Preview: no extra wrappers that could alter layout; render exactly as built
+        <div className="flex-1 overflow-auto">
+          {/* Render the page content only; header/nav should come from pages.json */}
+          <PageRenderer slug={currentSlug} pagesOverride={overridePages} />
         </div>
       ) : (
       <>

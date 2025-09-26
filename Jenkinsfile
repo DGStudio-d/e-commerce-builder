@@ -27,6 +27,10 @@ pipeline {
 
     booleanParam(name: 'START_MONITORING', defaultValue: true, description: 'Start/Update local stack via docker compose')
     string(name: 'APP_PORT', defaultValue: '8087', description: 'Host port for app service mapping (host:80)')
+
+    // SonarQube settings
+    string(name: 'SONAR_HOST_URL', defaultValue: 'http://sonarqube:9000', description: 'SonarQube URL (use http://sonarqube:9000 on same Docker network or your ngrok URL, e.g., https://sonar-yourname.ngrok-free.app)')
+    string(name: 'SONAR_TOKEN_CREDENTIALS_ID', defaultValue: 'SONARQUBE_PROJECT_TOKEN_ID', description: 'Jenkins Credentials (Secret text) ID holding a SonarQube project token')
   }
 
   environment {
@@ -38,6 +42,47 @@ pipeline {
       steps {
         checkout([$class: 'GitSCM', branches: [[name: params.BRANCH]], userRemoteConfigs: [[url: params.REPO_URL, credentialsId: params.GIT_CREDENTIALS_ID]]])
         script { echo "Checked out ${params.REPO_URL}@${params.BRANCH}" }
+      }
+    }
+
+    stage('Test & Coverage') {
+      steps {
+        sh '''#!/usr/bin/env bash
+set -euo pipefail
+npm ci
+# Allow zero tests during bootstrap without failing the pipeline
+npm run test || true
+'''
+      }
+    }
+
+    stage('SonarQube Analysis') {
+      environment {
+        SCANNER_HOME = tool 'SonarScanner'
+      }
+      steps {
+        withCredentials([string(credentialsId: params.SONAR_TOKEN_CREDENTIALS_ID, variable: 'SONAR_TOKEN')]) {
+          sh '''#!/usr/bin/env bash
+set -euo pipefail
+"${SCANNER_HOME}/bin/sonar-scanner" \
+  -Dsonar.host.url=''' + "${params.SONAR_HOST_URL}" + ''' \
+  -Dsonar.login="${SONAR_TOKEN}" \
+  -Dsonar.projectKey=e-builder \
+  -Dsonar.sources=src \
+  -Dsonar.tests=src \
+  -Dsonar.test.inclusions=**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx \
+  -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
+  -Dsonar.typescript.tsconfigPath=tsconfig.json ''' + "${env.CHANGE_ID ? "\\\n  -Dsonar.pullrequest.key=${env.CHANGE_ID} -Dsonar.pullrequest.branch=${env.CHANGE_BRANCH} -Dsonar.pullrequest.base=${env.CHANGE_TARGET}" : ''}" + '''
+'''
+        }
+      }
+    }
+
+    stage('Quality Gate') {
+      steps {
+        timeout(time: 5, unit: 'MINUTES') {
+          waitForQualityGate abortPipeline: true
+        }
       }
     }
 

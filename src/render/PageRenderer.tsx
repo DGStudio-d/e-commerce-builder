@@ -25,9 +25,21 @@ const PageRenderer: React.FC<PageRendererProps> = ({ slug, pagesOverride }) => {
     (async () => {
       setErrors([]);
       try {
-        const mod: any = await import('ajv');
-        const Ajv = mod.default || mod;
+        // Use Ajv 2020 to support draft 2020-12 features used by our schemas
+        const AjvMod: any = await import('ajv/dist/2020');
+        const Ajv = AjvMod.default || AjvMod;
         const ajv = new Ajv({ allErrors: true, allowUnionTypes: true });
+        // Add common JSON Schema formats (e.g., uri-reference)
+        try {
+          const addFormatsMod: any = await import('ajv-formats');
+          const addFormats = addFormatsMod.default || addFormatsMod;
+          addFormats(ajv);
+        } catch (_) {
+          // Formats are optional; continue without them if not installed
+        }
+        // Register external schemas so relative $ref in pages.schema can resolve
+        // components.schema has $id 'https://example.com/schemas/components.schema.json'
+        ajv.addSchema(componentSchema as any);
         const validatePage = ajv.compile(pageSchema as any);
         const validateComponent = ajv.compile((componentSchema as any));
 
@@ -53,11 +65,19 @@ const PageRenderer: React.FC<PageRendererProps> = ({ slug, pagesOverride }) => {
           setAjvReady(true);
           setAjvMissing(false);
         }
-      } catch (e) {
+      } catch (e: any) {
+        // Only mark AJV as missing if the module couldn't be loaded.
+        const message = e?.message || '';
+        const likelyMissing = message.includes('Cannot find module') || message.includes('Failed to resolve module');
         if (mounted) {
-          setAjvMissing(true);
-          setAjvReady(false);
-          setErrors([]);
+          setAjvMissing(likelyMissing);
+          setAjvReady(!likelyMissing);
+          // If AJV was loaded but validation threw for other reasons, surface that error
+          if (!likelyMissing) {
+            setErrors([String(message || e)]);
+          } else {
+            setErrors([]);
+          }
         }
       }
     })();

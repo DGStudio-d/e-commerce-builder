@@ -88,8 +88,15 @@ export const RenderComponent: React.FC<{ node: JsonNode }> = ({ node }) => {
     .filter(Boolean)
     .join(' '));
   const handlers = buildHandlers(node);
+  // Layout debug: outline containers when window.LayoutDebug === true
+  const isDebug = (() => { try { return (window as any).LayoutDebug === true; } catch { return false; } })();
+  const debugClass = isDebug ? 'outline outline-1 outline-dashed outline-amber-400/60' : '';
+  const debugTitle = isDebug ? `[${tag}]` : undefined;
+
   const common = {
-    className: cls,
+    className: [cls, debugClass].filter(Boolean).join(' ').trim(),
+    'data-tag': isDebug ? tag : undefined,
+    title: debugTitle,
     ...handlers,
   } as const;
 

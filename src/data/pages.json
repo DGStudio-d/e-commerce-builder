@@ -33,7 +33,7 @@
                   "trigger": {
                     "type": "button",
                     "props": { "text": "Cart (0)", "icon": "🛒" },
-                    "styles": { "padding": "px-3 py-2", "bg": "bg-gray-800", "text": "text-white", "rounded": "rounded-md" }
+                    "styles": { "padding": "px-3 py-2", "bg": "bg-gray-800", "text": "text-white", "rounded": "rounded-md", "whitespace": "whitespace-nowrap" }
                   },
                   "menu": [
                     { "type": "dropdownItem", "props": { "text": "Your cart is empty" }, "styles": { "text": "text-gray-500" } },
